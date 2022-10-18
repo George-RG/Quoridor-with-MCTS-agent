@@ -94,25 +94,6 @@ struct stacknode* createstacknode(int v)
 	return newstacknode;
 }
 
-// Create graph
-struct Graph* createGraph(int blocks)
-{
-	struct Graph* graph = malloc(sizeof(struct Graph));
-	graph->numBlocks = blocks;
-
-	graph->adjLists = malloc(blocks * sizeof(struct stacknode*));
-
-	graph->visited = malloc(blocks * sizeof(int));
-
-	int i;
-	for (i = 0; i < blocks; i++) 
-	{
-		graph->adjLists[i] = NULL;
-		graph->visited[i] = 0;
-	}
-	return graph;
-}
-
 // Add edge
 void addEdge(struct Graph* graph, int src, int dest) 
 {
@@ -153,36 +134,6 @@ void printList(struct stacknode* temp,int* visited)
 	printf("\n");
 }
 
-int illegal_wall_check(board* b,color player)
-{
-	int result,target,i;
-	point start;
-	struct Graph* graph = createGraph(b->size * b->size);
-
-	if(player==WHITE)
-	{
-		start = b->player1.position;
-		target = 0;
-	}	
-	else
-	{
-		start = b->player2.position;
-		target = b->size-1;	
-	}
-
-	result = DFS(graph,ptn(start,b->size),b,target);
-
-	for(i=0;i<b->size * b->size;i++)
-	{
-		free_list_DFS(graph->adjLists[i]);
-	}
-	free(graph->adjLists);
-	free(graph->visited);
-	free(graph);
-
-	return result;
-}
-
 void free_list_DFS(struct stacknode* head)
 {
    struct stacknode* tmp;
@@ -193,17 +144,4 @@ void free_list_DFS(struct stacknode* head)
        head = head->next;
        free(tmp);
     }
-}
-
-point ntp(int size,int k)     //number to point
-{
-	point p;
-	p.x=k % size;
-	p.y=k / size; 
-	return p;
-}
-
-int ptn(point p,int size )  //point to number
-{
-	return p.y*size+p.x;
 }

@@ -1,4 +1,4 @@
-#include "quoridor_wallcheck.h"
+#include "util.h"
 
 ///DFS pathfinding
 void addEdge(struct Graph* graph, int src, int dest);

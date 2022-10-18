@@ -1,26 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "quoridor_dfs.h"
 
-
-int get_command_id(char* buff);
-void clean_input(char *buff);
-point vertex_to_cordinates(char* vertex,int size);
-int legal_wall(board *b,point p,orientation orient,bool no_place);
-int legal_move(board *b,point p,player *pl,player *pl2);
-void addto_undo(move move,color player,point p,listptr* adr,int *move_num);
-void free_pointlist(pointptr list);
-point remove_nth_pointlist (int n,pointptr *list);
-int add_pointlist (point p,pointptr *list);
-tree_node* SelectRandomChild(tree_node node);
-int count_childs(tree_node node);
-board boardcpy(board original_board);
-void free_board(board b);
-void print_childs(tlptr list);
-void cords_to_vertex(point p, char* vertex,board *b);
-void compare_paths(int *a,int *b,distance distance, point* next_moves);
-int touching_wall(board* b,point p,orientation orient);
+#include "util.h"
 
 const char white_space[] = " \t\n"; //where to split each command's words (tokens)
 
@@ -114,96 +96,6 @@ point vertex_to_cordinates(char* vertex, int size)
 		result.y = -1;	
 
 	return result;
-}
-
-
-int legal_wall(board *b,point p,orientation orient,bool no_place)
-{
-	bool result = NO;
-	
-	if(p.x>b->size-2 || p.y>b->size-2 || p.x<0 || p.y<0)
-		return NO;
-
-	if(b->cells[p.y][p.x].wall == NO_WALL)
-	{
-		if(orient == HORIZONTAL && (p.x+1>b->size-2 || b->cells[p.y][p.x+1].wall != HORIZONTAL) && (p.x-1<0 || b->cells[p.y][p.x-1].wall != HORIZONTAL) )
-			result = YES;
-		if(orient == VERTICAL && (p.y+1>b->size-2 || b->cells[p.y+1][p.x].wall != VERTICAL) && (p.y-1<0 || b->cells[p.y-1][p.x].wall != VERTICAL))
-			result = YES;
-	}
-	if(result)
-	{
-		if(!touching_wall(b,p,orient))
-		{
-			if(!no_place)
-				b->cells[p.y][p.x].wall=orient;
-			return YES;		
-		}
-
-		b->cells[p.y][p.x].wall=orient;
-		if(illegal_wall_check(b,WHITE))
-			if(illegal_wall_check(b,BLACK))
-			{
-				if(no_place)
-					b->cells[p.y][p.x].wall=NO_WALL;
-				return YES;
-			}
-			else
-				b->cells[p.y][p.x].wall=NO_WALL;	
-		else
-			b->cells[p.y][p.x].wall=NO_WALL;
-	}													
-	return NO;
-}
-
-int touching_wall(board* b,point p,orientation orient)
-{
-	if(orient == HORIZONTAL)
-	{
-		if(p.x == 0 || p.x == b->size - 2) return YES;
-
-		//if(p.x == 1 || p.x == b->size - 1) return NO;
-
-		//left
-		if(p.y != 0 && b->cells[p.y-1][p.x-1].wall == VERTICAL) return YES;
-		if(p.y != b->size-2 && b->cells[p.y+1][p.x-1].wall == VERTICAL) return YES;
-		if(b->cells[p.y][p.x-1].wall == VERTICAL ||b->cells[p.y][p.x-2].wall == HORIZONTAL) return YES;
-
-		//middle
-		if(p.y != 0 && b->cells[p.y-1][p.x].wall == VERTICAL) return YES;
-		if(p.y != b->size-2 && b->cells[p.y+1][p.x].wall == VERTICAL) return YES;
-
-		//right
-		if(p.y != 0 && b->cells[p.y-1][p.x+1].wall == VERTICAL) return YES;
-		if(p.y != b->size-2 && b->cells[p.y+1][p.x+1].wall == VERTICAL) return YES;
-		if(b->cells[p.y][p.x+1].wall == VERTICAL ||b->cells[p.y][p.x+2].wall == HORIZONTAL) return YES;
-		
-	}
-	else
-	{
-		if(p.y == 0 || p.y == b->size - 2) return YES;
-
-		//if(p.y == 1 || p.y == b->size - 1) return NO;	
-	
-		//up
-		if(p.x != 0 && b->cells[p.y-1][p.x-1].wall == HORIZONTAL) return YES;
-		if(p.x != b->size-2 && b->cells[p.y-1][p.x+1].wall == HORIZONTAL) return YES;
-		if(b->cells[p.y-1][p.x].wall == HORIZONTAL) return YES;
-		if(p.y>1 && b->cells[p.y-2][p.x].wall == VERTICAL) return YES;
-
-
-		//middle
-		if(p.x != 0 && b->cells[p.y][p.x-1].wall == HORIZONTAL) return YES;
-		if(p.x != b->size-2 && b->cells[p.y][p.x+1].wall == HORIZONTAL) return YES;
-
-		//down
-		if(p.x != 0 && b->cells[p.y+1][p.x-1].wall == HORIZONTAL) return YES;
-		if(p.y != b->size-2 && b->cells[p.y+1][p.x+1].wall == HORIZONTAL) return YES;
-		if(b->cells[p.y-1][p.x].wall == HORIZONTAL) return YES;
-		if(p.y < b->size-3 && b->cells[p.y+2][p.x].wall == VERTICAL) return YES;
-	}
-
-	return NO;
 }
 
 int legal_move(board *b,point p,player *pl,player *pl2)
@@ -347,7 +239,7 @@ int add_pointlist (point p,pointptr *list)
 point remove_nth_pointlist (int n,pointptr *list)
 {
 	pointptr templist;
-	point temp_p;
+	point temp_p = {-1,-1};
 
 	while (*list != NULL)
 	{
@@ -362,6 +254,7 @@ point remove_nth_pointlist (int n,pointptr *list)
 		else
 			list=&((*list)->next);
 	}		
+	return temp_p;
 }
 
 void free_pointlist(pointptr list)
@@ -439,20 +332,19 @@ void free_board(board b)
 	free(b.cells);
 }
 
-void print_childs(tlptr list)
-{
-	tree_node child;
-	int n=0;
+// void print_childs(tlptr list)
+// {
+// 	tree_node child;
+// 	int n=0;
 
-	while(list != NULL)
-	{
-		n++;
-		child = *(list->child);
+// 	while(list != NULL)
+// 	{
+// 		n++;
+// 		child = *(list->child);
 
-
-		list=list->next;
-	}
-}
+// 		list=list->next;
+// 	}
+// }
 
 void cords_to_vertex(point p, char* vertex,board *b)
 {
@@ -468,4 +360,97 @@ void cords_to_vertex(point p, char* vertex,board *b)
 		vertex[1]=(y/10)+48;
 	}
 	vertex[0]=(p.x)+65;
+}
+
+point ntp(int size,int k)     //number to point
+{
+	point p;
+	p.x=k % size;
+	p.y=k / size; 
+	return p;
+}
+
+int ptn(point p,int size )  //point to number
+{
+	return p.y*size+p.x;
+}
+
+// Create graph
+struct Graph* createGraph(int blocks)
+{
+	struct Graph* graph = malloc(sizeof(struct Graph));
+	graph->numBlocks = blocks;
+
+	graph->adjLists = malloc(blocks * sizeof(struct stacknode*));
+
+	graph->visited = malloc(blocks * sizeof(int));
+
+	int i;
+	for (i = 0; i < blocks; i++) 
+	{
+		graph->adjLists[i] = NULL;
+		graph->visited[i] = 0;
+	}
+	return graph;
+}
+
+int wall_up(point p,board *b)
+{
+	if (p.y>0)
+		if(b->cells[p.y-1][p.x].wall==HORIZONTAL) 
+			return 1;
+	if(p.x>0 && p.y>0)
+		if(b->cells[p.y-1][p.x-1].wall==HORIZONTAL) 
+			return 1;
+
+	return 0;		
+}
+
+int wall_down(point p,board *b)
+{
+	if (p.y<b->size -1)
+		if(b->cells[p.y][p.x].wall==HORIZONTAL) 
+			return 1;
+	if(p.y<b->size -1 && p.x>0)
+		if(b->cells[p.y][p.x-1].wall==HORIZONTAL) 
+			return 1;
+
+	return 0;
+}
+
+int wall_left(point p,board *b)
+{
+	if (p.x>0)
+		if(b->cells[p.y][p.x-1].wall==VERTICAL) 
+			return 1;
+	if(p.x>0 && p.y>0)
+		if(b->cells[p.y-1][p.x-1].wall==VERTICAL) 
+			return 1;
+
+	return 0;		
+}
+
+int wall_right(point p,board *b)
+{
+	if (p.x<b->size -1)
+		if(b->cells[p.y][p.x].wall==VERTICAL) 
+			return 1;
+	if(p.x<b->size -1 && p.y>0)
+		if(b->cells[p.y-1][p.x].wall==VERTICAL) 
+			return 1;
+
+	return 0;		
+}
+
+int winner_helper(board b)
+{
+	if(b.player1.position.y==0)
+	{
+		return WHITE;
+	}
+	else if(b.player2.position.y==b.size-1)
+	{
+		return BLACK;
+	}
+	return NO_PLAYER;
 }

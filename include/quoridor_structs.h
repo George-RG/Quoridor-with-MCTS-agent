@@ -1,3 +1,6 @@
+#ifndef STRUCTS_H
+#define STRUCTS_H
+
 typedef struct {
 	int x;
 	int y;
@@ -107,3 +110,5 @@ typedef struct tree_node{
 
 	tlptr childs_list;
 }tree_node;
+
+#endif // STRUCTS_H
