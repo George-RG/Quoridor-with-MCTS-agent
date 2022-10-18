@@ -1,0 +1,7 @@
+*.log
+*.o
+*.json
+
+.vscode/
+
+vgcore.*
