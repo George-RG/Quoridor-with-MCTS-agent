@@ -8,16 +8,24 @@
 
 #include "MCTS.h"
 
-#define EVALUATION_THRESHOLD 0.8
 #define NUMBER_OF_SIMS 50000
 #define THREAD_NUMER 4
 #define CONSTANT 1.4142135623730950488016887242096980785696718753769480731766797379907324784621
 
 // Random Moves chance
-#define WALL_VS_MOVE_CHANCE 0.5
-#define BEST_VS_RANDOM_MOVE 0.8
+#define WALL_VS_MOVE_CHANCE 0.7
+#define BEST_VS_RANDOM_MOVE 0.3
 #define BEST_WALLMOVE 0.5                   // this is much more expensive
 #define GUIDED_RANDOM_WALL 0.75
+
+// Rollout policy
+#define MAX_MOVES 50
+#define EVALUATION_THRESHOLD 1.1
+
+// Evaluetion weights
+#define WEIGHTS 0.5
+#define WALL_WEIGHT 0.2
+#define DIST_WEIGHT 0.2
 
 int allDone(int* completed, int thread_num);
 
@@ -575,7 +583,7 @@ double eval_position(board* board, color current_player)
 	double path_diff = black_path - white_path + (current_player == WHITE ? +0.5 : -0.5); 
 	double distance_metric = ((double) MAX(path_diff, 10.0)) / 10.0;
 
-	return 0.5 + 0.2 * wall_metric + 0.2 * distance_metric; 
+	return WEIGHTS + WALL_WEIGHT * wall_metric + DIST_WEIGHT * distance_metric; 
 }
 
 void* SimulateRollout(void* arg)
@@ -590,7 +598,7 @@ void* SimulateRollout(void* arg)
 	int heuristic_moves=0;
 	bool no_wall_bool = NO;
 
-	while (board_winner == NO_PLAYER && heuristic_moves < 40)
+	while (board_winner == NO_PLAYER && heuristic_moves < MAX_MOVES)
 	{
 		heuristic_moves++;
 		current_player = ((current_player)%2)+1; //toggle player
