@@ -454,3 +454,174 @@ int winner_helper(board b)
 	}
 	return NO_PLAYER;
 }
+
+int comparePoints(void* a, void* b)
+{
+	point* p1 = (point*) a;
+	point* p2 = (point*) b;
+
+	if(p1->x == p2->x && p1->y == p2->y)
+		return 1;
+
+	return 0;
+}
+
+ListPtr GetAllPosibleMoves(board* b, color pl_color)
+{
+	ListPtr list = CreateList(comparePoints,free);
+	player* agent; player* opponent;
+
+	if(pl_color == WHITE)
+	{
+		agent = &b->player1;
+		opponent = &b->player2;
+	}
+	else
+	{
+		agent = &b->player2;
+		opponent = &b->player1;
+	}
+
+	point pos = agent->position;
+
+	point up = {pos.x, pos.y-1}, up_up = {pos.x, pos.y-2}, up_right = {pos.x+1, pos.y-1}, up_left = {pos.x-1, pos.y-1};
+	if(legal_move(b,up,agent,opponent))
+	{
+		point* result = malloc(sizeof(point));
+		*result = up;
+		ListInsert(result,list);
+	}
+	else if(legal_move(b,up_up,agent,opponent))
+	{
+		point* result = malloc(sizeof(point));
+		*result = up_up;
+		ListInsert(result,list);
+	}
+	else if(legal_move(b,up_right,agent,opponent))
+	{
+		point* result = malloc(sizeof(point));
+		*result = up_right;
+		ListInsert(result,list);
+	}
+	else if(legal_move(b,up_left,agent,opponent))
+	{
+		point* result = malloc(sizeof(point));
+		*result = up_left;
+		ListInsert(result,list);
+	}
+
+	point down = {pos.x, pos.y+1}, down_down = {pos.x, pos.y+2}, down_right = {pos.x+1, pos.y+1}, down_left = {pos.x-1, pos.y+1};
+	if(legal_move(b,down,agent,opponent))
+	{
+		point* result = malloc(sizeof(point));
+		*result = down;
+		ListInsert(result,list);
+	}
+	else if(legal_move(b,down_down,agent,opponent))
+	{
+		point* result = malloc(sizeof(point));
+		*result = down_down;
+		ListInsert(result,list);
+	}
+	else if(legal_move(b,down_right,agent,opponent))
+	{
+		point* result = malloc(sizeof(point));
+		*result = down_right;
+		ListInsert(result,list);
+	}
+	else if(legal_move(b,down_left,agent,opponent))
+	{
+		point* result = malloc(sizeof(point));
+		*result = down_left;
+		ListInsert(result,list);
+	}
+
+	point right = {pos.x+1, pos.y}, right_right = {pos.x+2, pos.y}, right_up = {pos.x+1, pos.y-1}, right_down = {pos.x+1, pos.y+1};
+	if(legal_move(b,right,agent,opponent))
+	{
+		point* result = malloc(sizeof(point));
+		*result = right;
+		ListInsert(result,list);
+	}
+	else if(legal_move(b,right_right,agent,opponent))
+	{
+		point* result = malloc(sizeof(point));
+		*result = right_right;
+		ListInsert(result,list);
+	}
+	else if(legal_move(b,right_up,agent,opponent))
+	{
+		point* result = malloc(sizeof(point));
+		*result = right_up;
+		ListInsert(result,list);
+	}
+	else if(legal_move(b,right_down,agent,opponent))
+	{
+		point* result = malloc(sizeof(point));
+		*result = right_down;
+		ListInsert(result,list);
+	}
+
+	point left = {pos.x-1, pos.y}, left_left = {pos.x-2, pos.y}, left_up = {pos.x-1, pos.y-1}, left_down = {pos.x-1, pos.y+1};
+	if(legal_move(b,left,agent,opponent))
+	{
+		point* result = malloc(sizeof(point));
+		*result = left;
+		ListInsert(result,list);
+	}
+	else if(legal_move(b,left_left,agent,opponent))
+	{
+		point* result = malloc(sizeof(point));
+		*result = left_left;
+		ListInsert(result,list);
+	}
+	else if(legal_move(b,left_up,agent,opponent))
+	{
+		point* result = malloc(sizeof(point));
+		*result = left_up;
+		ListInsert(result,list);
+	}
+	else if(legal_move(b,left_down,agent,opponent))
+	{
+		point* result = malloc(sizeof(point));
+		*result = left_down;
+		ListInsert(result,list);
+	}
+
+	return list;
+}
+
+double MAX(double a,double b)
+{
+	if(a>b)
+		return a;
+	else
+		return b;
+}
+
+int list_length(listptr* adr)
+{
+	list_node* list = *adr;
+	int n=0;
+	while(list != NULL)
+	{
+		n++;
+		list=list->next;
+	}
+	return n;
+}
+
+void shuffle(Pointer* array, size_t size)
+{
+	if (size > 1) 
+	{
+		size_t i;
+		for (i = 0; i < size - 1; i++) 
+		{
+			size_t j = i + rand() / (RAND_MAX / (size - i) + 1);
+			Pointer t = array[j];
+			array[j] = array[i];
+			array[i] = t;
+		}
+	}
+}

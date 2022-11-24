@@ -100,7 +100,7 @@ typedef struct tl_node{ //tree list
 typedef tl_node* tlptr; //tree list ptr
 
 typedef struct tree_node{
-	int wins;
+	double wins;
 	int passes;
 	//double utc;
 	bool visited;
@@ -108,7 +108,25 @@ typedef struct tree_node{
 
 	mcts_move current_move;
 
+	int turns;
+
 	tlptr childs_list;
 }tree_node;
+
+typedef struct thread_args{
+	tree_node node;
+	board board;
+	double* result_winner;
+	int* completed;
+
+	int cur_moves;
+} thread_args;
+
+typedef struct wall{
+	point point;
+	orientation orient;
+} wall;
+
+typedef wall* wallptr;
 
 #endif // STRUCTS_H

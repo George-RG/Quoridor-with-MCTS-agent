@@ -1,4 +1,5 @@
 #include "quoridor_structs.h"
+#include "List.h"
 
 #ifndef UTIL_H
 #define UTIL_H
@@ -29,4 +30,8 @@ int wall_left(point p,board *b);
 int wall_right(point p,board *b);
 
 int winner_helper(board b);
+double MAX(double a,double b);
+int list_length(listptr* adr);
+void shuffle(Pointer* array, size_t size);
+ListPtr GetAllPosibleMoves(board* b, color pl_color);
 #endif // UTIL_H

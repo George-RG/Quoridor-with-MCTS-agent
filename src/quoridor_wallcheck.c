@@ -122,3 +122,45 @@ int legal_wall(board *b,point p,orientation orient,bool no_place)
 	}													
 	return NO;
 }
+
+int compareWalls(Pointer a, Pointer b)
+{
+	wallptr wall_1 = (wallptr) a;
+	wallptr wall_2 = (wallptr) b;
+
+	if(wall_1->point.x == wall_2->point.x && wall_1->point.y == wall_2->point.y && wall_1->orient == wall_2->orient)
+		return 1;
+	else
+		return 0;
+}
+
+ListPtr GetAllPosibleWalls(board* b,color player)
+{
+	int i,j;
+	point p;
+
+	ListPtr list = CreateList(compareWalls,free);
+
+	for(i=0;i<b->size-1;i++)
+		for(j=0;j<b->size-1;j++)
+		{
+			p.x = j;
+			p.y = i;
+			if (b->cells[i][j].wall == NO_WALL)
+			{
+				wallptr hor = (wallptr) malloc(sizeof(wall));
+				wallptr ver = (wallptr) malloc(sizeof(wall));
+
+				hor->point = p;
+				hor->orient = HORIZONTAL;
+
+				ver->point = p;
+				ver->orient = VERTICAL;
+
+				ListInsert(hor,list);
+				ListInsert(ver,list);
+			}
+		}
+
+	return list;
+}

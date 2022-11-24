@@ -47,6 +47,8 @@ int main (void){
 	int game_move_n;
 	srand(time(NULL));
 
+	printf("Welcome to Quoridor\n");
+
 	while ( fgets(buff, 100, stdin) )
 	{	
 		win = NO_PLAYER;
@@ -720,10 +722,11 @@ void genmove(board *b, char* buff,int* move_num,listptr *adr)
 	// And if AI is loosing seriously, help it as well.
 	// So, if it is initial phase of a game or estimated winRate is low enough,
 	// help AI to find shortest path pawn move.
-	if(agent->available_walls>0 && (*move_num>6 || agent->position.x != b->size/2) )
+	if(agent->available_walls>0 && (*move_num>6 || agent->position.x != b->size/2))
 	{
-		winrate = MCTS(b,player_color,30000,adr,move_num);
-		printf("winnrate:%f\n",winrate);
+		winrate = MCTS(b,player_color,adr,move_num);
+		printf("Thread winnrate:%f\n",winrate);
+		fflush(stdout);
 		if(winrate>=0.1) return; 
 	}
 

@@ -2,7 +2,7 @@
 WIN_PATH := /mnt/c/Users/Georg/Desktop/
 
 # Set the name of the output
-EXEC := test
+EXEC := threaded
 
 # paths
 LIB := 
@@ -18,13 +18,14 @@ CC := gcc
 CXX := g++
 
 #Debug mode
-DEBUG := true
+DEBUG := false
 
 #Exta libs
 LIBS := None
 EXTRA :=
 
 #For web emcc path
+EMCC_ARGS :=
 EMCC_PATH := /home/george/Documents/emsdk
 EMCC_TEMPLATE := $(LIB)/web/template.html
 
@@ -80,7 +81,7 @@ else ifeq ($(PLATFORM),WEB)
 	CXX := em++
 
 	CFLAGS += -DWASM
-	LDFLAGS += -L$(LIB)/web $(LIBS) -s ASYNCIFY -s USE_GLFW=3 -s TOTAL_MEMORY=67108864 -s FORCE_FILESYSTEM=1 -s USE_PTHREADS=1 -s PTHREAD_POOL_SIZE=10 --shell-file $(EMCC_TEMPLATE)
+	LDFLAGS += -L$(LIB)/web $(LIBS) -s ASYNCIFY -s USE_GLFW=3 -s TOTAL_MEMORY=67108864 -s FORCE_FILESYSTEM=1 $(EMCC_ARGS) --shell-file $(EMCC_TEMPLATE)
 
 # SHELL := /bin/bash
 
